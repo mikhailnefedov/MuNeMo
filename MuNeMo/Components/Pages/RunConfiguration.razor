@@ -1,0 +1,78 @@
+@page "/RunConfiguration"
+@using MuNeMo.Scripting
+@rendermode InteractiveServer
+@inject IShellScriptRepository ShellScriptRepository
+
+<PageTitle>Run Configuration</PageTitle>
+
+<form>
+    <label for="inputField">Input Field</label>
+    <input type="text" id="inputField" @bind="inputValue"/>
+</form>
+
+<hr />
+
+@foreach (var element in _elements)
+{
+    <div>
+        @if (element.Type == ScriptType.ScriptCall)
+        {
+            var script = element.Script as ShellScript;
+
+            foreach (var parameter in script!.ParameterDescriptions)
+            {
+                <div>
+                    <label title="@parameter.Value">
+                        @parameter.Key:
+                    </label>
+                </div>
+            }
+        }
+        else if (element.Type == ScriptType.CustomScript)
+        {
+            <textarea>@element.Content</textarea>
+        }
+    </div>
+}
+
+@foreach (var script in availableShellScripts)
+{
+    <button @onclick="() => UseShellScript(script)">@script.Name</button>
+}
+<button @onclick="AddCode">Add Code</button>
+
+@code {
+    private string inputValue;
+    private List<ShellScript> availableShellScripts;
+    private List<DynamicElement> _elements = [];
+    
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        availableShellScripts = ShellScriptRepository.GetShellScripts();
+    }
+
+    private void UseShellScript(ShellScript script)
+    {
+        _elements.Add(new DynamicElement { Type = ScriptType.ScriptCall, Script = script, Content = script.Name });
+    }
+
+    private void AddCode()
+    {
+        _elements.Add(new DynamicElement { Type = ScriptType.CustomScript, Content = "" });
+    }
+
+    private class DynamicElement
+    {
+        public ScriptType Type { get; set; }
+        public IScript Script { get; set; }
+        public string Content { get; set; }
+    }
+
+    private enum ScriptType
+    {
+        ScriptCall,
+        CustomScript
+    }
+
+}

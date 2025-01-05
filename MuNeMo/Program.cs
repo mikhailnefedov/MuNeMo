@@ -1,5 +1,6 @@
 using MuNeMo.Components;
 using MuNeMo.DataAccess;
+using MuNeMo.Scripting;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,6 +9,8 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
 builder.Services.AddDbContext<MultiModifyContext>();
+
+builder.Services.AddTransient<IShellScriptRepository, ShellScriptRepository>();
 
 var app = builder.Build();
 
