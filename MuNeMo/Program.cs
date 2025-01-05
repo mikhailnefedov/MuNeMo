@@ -1,10 +1,13 @@
 using MuNeMo.Components;
+using MuNeMo.DataAccess;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+builder.Services.AddDbContext<MultiModifyContext>();
 
 var app = builder.Build();
 
