@@ -5,8 +5,8 @@ namespace MuNeMo.Scripting;
 public class ShellScript : IScript
 {
     public string Name { get; set; }
-
-    public Dictionary<string, string> ParameterDescriptions { get; set; } = [];
+    
+    public Dictionary<string, ParameterData> Parameters { get; set; } = new();
 
     public static ShellScript CreateFromScript(string fileName, string[] scriptContentLines)
     {
@@ -23,7 +23,11 @@ public class ShellScript : IScript
             {
                 string key = match.Groups[1].Value;
                 string description = match.Groups[2].Value;
-                script.ParameterDescriptions[key] = description;
+                script.Parameters[key] = new ParameterData()
+                {
+                    Description = description,
+                    Value = ""
+                };
             }
         }
         return script;
@@ -33,4 +37,17 @@ public class ShellScript : IScript
     {
         throw new NotImplementedException();
     }
+}
+
+public record ParameterData
+{
+    /// <summary>
+    /// Description of argument.
+    /// </summary>
+    public string Description { get; set; }
+    
+    /// <summary>
+    /// Value of argument.
+    /// </summary>
+    public string Value { get; set; }
 }

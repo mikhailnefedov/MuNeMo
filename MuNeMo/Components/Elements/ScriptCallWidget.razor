@@ -1,0 +1,18 @@
+@using MuNeMo.Scripting
+
+<label>@Script.Name</label>
+@foreach (var parameter in @Script!.Parameters)
+{
+    <div>
+        
+        <label title="@parameter.Value.Description">
+            @parameter.Key:
+            <InputText @bind-Value="parameter.Value.Value" />
+        </label>
+    </div>
+}
+
+@code { 
+    [Parameter] 
+    public required ShellScript Script { get; set; }
+}

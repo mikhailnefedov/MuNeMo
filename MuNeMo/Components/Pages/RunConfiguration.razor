@@ -1,5 +1,6 @@
 @page "/RunConfiguration"
 @using MuNeMo.Scripting
+@using MuNeMo.Components.Elements
 @rendermode InteractiveServer
 @inject IShellScriptRepository ShellScriptRepository
 
@@ -18,21 +19,14 @@
         @if (element.Type == ScriptType.ScriptCall)
         {
             var script = element.Script as ShellScript;
-
-            foreach (var parameter in script!.ParameterDescriptions)
-            {
-                <div>
-                    <label title="@parameter.Value">
-                        @parameter.Key:
-                    </label>
-                </div>
-            }
+            <ScriptCallWidget Script="script"></ScriptCallWidget>
         }
         else if (element.Type == ScriptType.CustomScript)
         {
             <textarea>@element.Content</textarea>
         }
     </div>
+    <hr />
 }
 
 @foreach (var script in availableShellScripts)
