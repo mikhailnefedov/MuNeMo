@@ -4,6 +4,12 @@
 @rendermode InteractiveServer
 @inject IShellScriptRepository ShellScriptRepository
 
+<style>
+    #first-code-line{
+        resize: none
+    }
+</style>
+
 <PageTitle>Run Configuration</PageTitle>
 
 <form>
@@ -12,6 +18,14 @@
 </form>
 
 <hr />
+
+<div>
+    <label>Generate script:</label>
+</div>
+
+<div>
+    <textarea id="first-code-line" disabled>#!/bin/bash</textarea>
+</div>
 
 @foreach (var element in _elements)
 {
