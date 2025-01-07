@@ -22,6 +22,8 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+await Task.Run(() => { });
+
 app.UseHttpsRedirection();
 
 app.UseStaticFiles();

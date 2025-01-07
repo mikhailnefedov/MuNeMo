@@ -1,7 +1,7 @@
 @page "/RunConfiguration"
+@rendermode InteractiveServer
 @using MuNeMo.Scripting
 @using MuNeMo.Components.Elements
-@rendermode InteractiveServer
 @inject IShellScriptRepository ShellScriptRepository
 
 <style>
@@ -37,7 +37,7 @@
         }
         else if (element.Type == ScriptType.CustomScript)
         {
-            <textarea>@element.Content</textarea>
+            <ShellScriptCodeEditor></ShellScriptCodeEditor>
         }
     </div>
     <hr />
