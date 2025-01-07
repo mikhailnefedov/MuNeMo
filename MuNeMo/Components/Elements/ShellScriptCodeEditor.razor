@@ -1,0 +1,29 @@
+@rendermode InteractiveServer
+
+<style>
+    .my-editor-class {
+        height: 500px;
+    }
+</style>
+
+<div>
+    <StandaloneCodeEditor CssClass="my-editor-class" ConstructionOptions="EditorConstructionOptions" />
+</div>
+
+@code
+{
+    private StandaloneEditorConstructionOptions EditorConstructionOptions(StandaloneCodeEditor editor)
+    {
+        return new StandaloneEditorConstructionOptions
+        {
+            AutomaticLayout = true,
+            Language = "shell",
+            Value = "",
+            Theme = "vs-dark",
+            Minimap = new EditorMinimapOptions
+            {
+                Enabled = false,
+            }
+        };
+    }
+}
