@@ -5,26 +5,43 @@
 @inject IShellScriptRepository ShellScriptRepository
 
 <style>
-    #first-code-line{
-        resize: none
+    #split-configuration-container { 
+        display: flex;
+        height:  500px;
+    }
+
+    #yaml-configuration-editor, #yaml-documentation-container {
+        flex: 1;
+        padding: 10px;
+        box-sizing: border-box;
+    }
+
+    #yaml-configuration-editor { 
+        border-right: 1px solid #ccc;
+    }
+
+    #yaml-documentation-container { 
+        overflow-y: auto;
     }
 </style>
 
-<PageTitle>Run Configuration</PageTitle>
+<PageTitle>Run multi-gitter</PageTitle>
 
-<form>
-    <label for="inputField">Input Field</label>
-    <input type="text" id="inputField" @bind="inputValue"/>
-</form>
+<label>Run configuration:</label>
+
+<div id="split-configuration-container">
+    <div id="yaml-configuration-editor">
+        <YamlCodeEditor></YamlCodeEditor>
+    </div>
+    <div id="yaml-documentation-container">
+        <YamlConfigurationDocumentation></YamlConfigurationDocumentation>
+    </div>
+</div>
 
 <hr />
 
 <div>
-    <label>Generate script:</label>
-</div>
-
-<div>
-    <textarea id="first-code-line" disabled>#!/bin/bash</textarea>
+    <label>Script generation:</label>
 </div>
 
 @foreach (var element in _elements)

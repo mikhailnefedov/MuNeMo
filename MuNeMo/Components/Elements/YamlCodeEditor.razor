@@ -1,0 +1,29 @@
+@rendermode InteractiveServer
+
+<style>
+    .yaml-configuration-editor {
+        height: 500px;
+    }
+</style>
+
+<div>
+    <StandaloneCodeEditor CssClass="yaml-configuration-editor" ConstructionOptions="EditorConstructionOptions" />
+</div>
+
+@code
+{
+    private StandaloneEditorConstructionOptions EditorConstructionOptions(StandaloneCodeEditor editor)
+    {
+        return new StandaloneEditorConstructionOptions
+        {
+            AutomaticLayout = true,
+            Language = "yaml",
+            Value = "",
+            Theme = "vs-dark",
+            Minimap = new EditorMinimapOptions
+            {
+                Enabled = false,
+            }
+        };
+    }
+}
