@@ -1,0 +1,69 @@
+@using MuNeMo.Scripting
+@rendermode InteractiveServer
+@inject IShellScriptRepository ShellScriptRepository
+
+@foreach (var element in _elements)
+{
+    <div>
+        @if (element.Type is ScriptType.ScriptCall)
+        {
+            var script = element.Script as ShellScript;
+            <ScriptCallWidget Script="@script"></ScriptCallWidget>
+        }
+        else if (element.Type is ScriptType.CustomScript)
+        {
+            <ShellScriptCodeEditor></ShellScriptCodeEditor>
+        }
+    </div>
+    <hr />
+}
+
+@foreach (var script in availableShellScripts)
+{
+    <button @onclick="() => AddShellScript(script)">@script.Name</button>
+}
+<button @onclick="AddCode">Add Code</button>
+
+
+@code {
+    private List<ShellScript> availableShellScripts;
+    private List<ScriptElement> _elements = [];
+    
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        availableShellScripts = ShellScriptRepository.GetShellScripts();
+    }
+
+    /// <summary>
+    /// Returns the executable shell script string generated from used components.
+    /// </summary>
+    /// <returns></returns>
+    public string GetExecutableScript()
+    {
+        return "Test";
+    }
+    
+    private void AddShellScript(ShellScript script)
+    {
+        _elements.Add(new ScriptElement { Type = ScriptType.ScriptCall, Script = script, Content = script.Name });
+    }
+    
+    private void AddCode()
+    {
+        _elements.Add(new ScriptElement { Type = ScriptType.CustomScript, Content = "" });
+    }
+    
+    private class ScriptElement
+    {
+        public ScriptType Type { get; set; }
+        public IScript Script { get; set; }
+        public string Content { get; set; }
+    }
+
+    private enum ScriptType
+    {
+        ScriptCall,
+        CustomScript
+    }
+}

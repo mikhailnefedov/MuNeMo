@@ -2,7 +2,6 @@
 @rendermode InteractiveServer
 @using MuNeMo.Scripting
 @using MuNeMo.Components.Elements
-@inject IShellScriptRepository ShellScriptRepository
 
 <style>
     #split-configuration-container { 
@@ -44,60 +43,28 @@
     <label>Script generation:</label>
 </div>
 
-@foreach (var element in _elements)
-{
-    <div>
-        @if (element.Type == ScriptType.ScriptCall)
-        {
-            var script = element.Script as ShellScript;
-            <ScriptCallWidget Script="script"></ScriptCallWidget>
-        }
-        else if (element.Type == ScriptType.CustomScript)
-        {
-            <ShellScriptCodeEditor></ShellScriptCodeEditor>
-        }
-    </div>
-    <hr />
-}
+<div>
+    <ScriptGeneration @ref="ScriptGeneration"/>
+</div>
 
-@foreach (var script in availableShellScripts)
-{
-    <button @onclick="() => UseShellScript(script)">@script.Name</button>
-}
-<button @onclick="AddCode">Add Code</button>
+<div>
+    <button @onclick="Test">Run!</button>
+</div>
+
 
 @code {
-    private string inputValue;
-    private List<ShellScript> availableShellScripts;
-    private List<DynamicElement> _elements = [];
+    private ScriptGeneration ScriptGeneration;
     
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
-        availableShellScripts = ShellScriptRepository.GetShellScripts();
+        ScriptGeneration = new ScriptGeneration();
     }
 
-    private void UseShellScript(ShellScript script)
+    private void Test()
     {
-        _elements.Add(new DynamicElement { Type = ScriptType.ScriptCall, Script = script, Content = script.Name });
-    }
-
-    private void AddCode()
-    {
-        _elements.Add(new DynamicElement { Type = ScriptType.CustomScript, Content = "" });
-    }
-
-    private class DynamicElement
-    {
-        public ScriptType Type { get; set; }
-        public IScript Script { get; set; }
-        public string Content { get; set; }
-    }
-
-    private enum ScriptType
-    {
-        ScriptCall,
-        CustomScript
+        var t = ScriptGeneration.GetExecutableScript();
+        Console.WriteLine(t);
     }
 
 }
