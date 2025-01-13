@@ -2,7 +2,13 @@
 @rendermode InteractiveServer
 @inject IShellScriptRepository ShellScriptRepository
 
-<style> .dropbtn {
+<style> 
+    #add-elements-container {
+        max-width: fit-content;
+        margin-inline: auto;
+    }
+    
+    .dropbtn {
         background-color: #6c757d; /* Grey color */
         color: white;
         padding: 10px 20px; /* Matching the button padding */
@@ -71,25 +77,29 @@
         {
             var script = element.Script as ShellScript;
             <ScriptCallWidget Script="@script"></ScriptCallWidget>
+            <button @onclick="() => RemoveScriptElement(element)">Remove</button>
         }
         else if (element.Type is ScriptType.CustomScript)
         {
             <ShellScriptCodeEditor></ShellScriptCodeEditor>
+            <button @onclick="() => RemoveScriptElement(element)">Remove</button>
         }
     </div>
     <hr />
 }
 
-<div class="dropdown">
-    <button class="dropbtn">Select Script</button>
-    <div class="dropdown-content">
-        @foreach (var script in availableShellScripts)
-        {
-            <button @onclick="() => AddShellScript(script)" class="script-item">@script.Name</button>
-        }
+<div id="add-elements-container">
+    <div class="dropdown">
+        <button class="dropbtn">Select Script</button>
+        <div class="dropdown-content">
+            @foreach (var script in availableShellScripts)
+            {
+                <button @onclick="() => AddShellScript(script)" class="script-item">@script.Name</button>
+            }
+        </div>
     </div>
+    <button @onclick="AddCode" class="styled-button">Add Code</button>
 </div>
-<button @onclick="AddCode" class="styled-button">Add Code</button>
 
 
 @code {
@@ -136,6 +146,11 @@
     private void AddCode()
     {
         _elements.Add(new ScriptElement { Type = ScriptType.CustomScript, Content = "" });
+    }
+
+    private void RemoveScriptElement(ScriptElement scriptElement)
+    {
+        _elements.Remove(scriptElement);
     }
     
     private class ScriptElement
