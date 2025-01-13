@@ -5,7 +5,7 @@ namespace MuNeMo.Scripting;
 [GenerateAutoInterface]
 public class ShellScriptRepository : IShellScriptRepository
 {
-    private const string SCRIPT_DIRECTORY = "../ShellScripts";
+    private const string SCRIPT_DIRECTORY = "./ShellScripts";
 
     public List<ShellScript> GetShellScripts()
     {

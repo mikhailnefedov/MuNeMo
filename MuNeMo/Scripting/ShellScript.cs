@@ -5,14 +5,18 @@ namespace MuNeMo.Scripting;
 public class ShellScript : IScript
 {
     public string Name { get; set; }
+
+    public string Path { get; set; }
+
     
     public Dictionary<string, ParameterData> Parameters { get; set; } = new();
 
-    public static ShellScript CreateFromScript(string fileName, string[] scriptContentLines)
+    public static ShellScript CreateFromScript(string filePath, string[] scriptContentLines)
     {
-        ShellScript script = new ShellScript()
+        ShellScript script = new ShellScript
         {
-            Name = fileName
+            Name = filePath.Split("\\").Last(),
+            Path = filePath
         };
         var regex = new Regex(@"##\s*(\w+)\s*:\s*(.+)");
 
@@ -23,7 +27,7 @@ public class ShellScript : IScript
             {
                 string key = match.Groups[1].Value;
                 string description = match.Groups[2].Value;
-                script.Parameters[key] = new ParameterData()
+                script.Parameters[key] = new ParameterData
                 {
                     Description = description,
                     Value = ""

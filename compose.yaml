@@ -4,3 +4,7 @@
     build:
       context: .
       dockerfile: MuNeMo/Dockerfile
+    ports:
+      - "8080:8080"
+    volumes:
+      - "./MuNeMo/ShellScripts:/app/ShellScripts"

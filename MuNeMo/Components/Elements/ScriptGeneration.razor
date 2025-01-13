@@ -2,6 +2,68 @@
 @rendermode InteractiveServer
 @inject IShellScriptRepository ShellScriptRepository
 
+<style> .dropbtn {
+        background-color: #6c757d; /* Grey color */
+        color: white;
+        padding: 10px 20px; /* Matching the button padding */
+        font-size: 16px;
+        border: none;
+        cursor: pointer;
+        border-radius: 5px;
+    }
+
+    .dropdown {
+        position: relative;
+        display: inline-block;
+    }
+
+    .dropdown-content {
+        display: none;
+        position: absolute;
+        background-color: #e9ecef; /* Light grey */
+        min-width: 160px;
+        box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+        z-index: 1;
+        border-radius: 5px;
+    }
+
+    .dropdown-content button {
+        background-color: #f8f9fa; /* Lightest grey */
+        color: black;
+        padding: 10px 20px; /* Matching the button padding */
+        text-decoration: none;
+        display: block;
+        border: none;
+        width: 100%;
+        text-align: left;
+        border-radius: 5px;
+    }
+
+    .dropdown-content button:hover {
+        background-color: #dee2e6; /* Slightly darker grey */
+    }
+
+    .dropdown:hover .dropdown-content {
+        display: block;
+    }
+
+    .styled-button {
+        background-color: #6c757d; /* Grey color */
+        color: white;
+        border: none;
+        border-radius: 5px;
+        padding: 10px 20px; /* Matching the dropdown padding */
+        margin: 5px;
+        cursor: pointer;
+        font-size: 16px;
+    }
+
+    .styled-button:hover {
+        background-color: #5a6268; /* Darker grey */
+    } 
+
+</style>
+
 @foreach (var element in _elements)
 {
     <div>
@@ -18,16 +80,23 @@
     <hr />
 }
 
-@foreach (var script in availableShellScripts)
-{
-    <button @onclick="() => AddShellScript(script)">@script.Name</button>
-}
-<button @onclick="AddCode">Add Code</button>
+<div class="dropdown">
+    <button class="dropbtn">Select Script</button>
+    <div class="dropdown-content">
+        @foreach (var script in availableShellScripts)
+        {
+            <button @onclick="() => AddShellScript(script)" class="script-item">@script.Name</button>
+        }
+    </div>
+</div>
+<button @onclick="AddCode" class="styled-button">Add Code</button>
 
 
 @code {
     private List<ShellScript> availableShellScripts;
     private List<ScriptElement> _elements = [];
+    
+    private string _selectedScriptElement;
     
     protected override async Task OnInitializedAsync()
     {
@@ -44,6 +113,21 @@
         return "Test";
     }
     
+    /// <summary>
+    /// Call for selecting a script from selection list.
+    /// </summary>
+    private void OnScriptSelected(ChangeEventArgs e)
+    {
+        var selectedScriptName = e.Value!.ToString();
+        var selectedScript = availableShellScripts.FirstOrDefault(script => script.Name == selectedScriptName);
+        if (selectedScript != null)
+        {
+            AddShellScript(selectedScript);
+        }
+
+        e.Value = string.Empty;
+    }
+
     private void AddShellScript(ShellScript script)
     {
         _elements.Add(new ScriptElement { Type = ScriptType.ScriptCall, Script = script, Content = script.Name });
