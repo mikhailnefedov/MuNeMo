@@ -1,3 +1,4 @@
+@using MuNeMo.Scripting
 @rendermode InteractiveServer
 
 <style>
@@ -8,23 +9,36 @@
 </style>
 
 <div>
-    <StandaloneCodeEditor CssClass="my-editor-class" ConstructionOptions="EditorConstructionOptions" />
+    <StandaloneCodeEditor @ref="_editor" 
+                          OnDidChangeModelContent="HandleInput"
+                          CssClass="my-editor-class" 
+                          ConstructionOptions="EditorConstructionOptions" />
 </div>
 
 @code
 {
+    private StandaloneCodeEditor _editor = null!;
+    
+    [Parameter] 
+    public required ShellScriptCode Code { get; set; }
+    
     private StandaloneEditorConstructionOptions EditorConstructionOptions(StandaloneCodeEditor editor)
     {
         return new StandaloneEditorConstructionOptions
         {
             AutomaticLayout = true,
             Language = "shell",
-            Value = "",
+            Value = Code.Content,
             Theme = "vs-dark",
             Minimap = new EditorMinimapOptions
             {
                 Enabled = false,
             }
         };
+    }
+    
+    private async Task HandleInput(ModelContentChangedEvent e)
+    {
+        Code.Content = await _editor.GetValue();
     }
 }

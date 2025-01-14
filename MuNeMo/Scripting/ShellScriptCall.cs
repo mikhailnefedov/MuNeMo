@@ -2,7 +2,7 @@ using System.Text.RegularExpressions;
 
 namespace MuNeMo.Scripting;
 
-public class ShellScript : IScript
+public class ShellScriptCall : IScript
 {
     public string Name { get; set; }
 
@@ -11,9 +11,9 @@ public class ShellScript : IScript
     
     public Dictionary<string, ParameterData> Parameters { get; set; } = new();
 
-    public static ShellScript CreateFromScript(string filePath, string[] scriptContentLines)
+    public static ShellScriptCall CreateFromScript(string filePath, string[] scriptContentLines)
     {
-        ShellScript script = new ShellScript
+        ShellScriptCall scriptCall = new ShellScriptCall
         {
             Name = filePath.Split("\\").Last(),
             Path = filePath
@@ -27,19 +27,19 @@ public class ShellScript : IScript
             {
                 string key = match.Groups[1].Value;
                 string description = match.Groups[2].Value;
-                script.Parameters[key] = new ParameterData
+                scriptCall.Parameters[key] = new ParameterData
                 {
                     Description = description,
                     Value = ""
                 };
             }
         }
-        return script;
+        return scriptCall;
     }
     
     public string ToExecutableScript()
     {
-        throw new NotImplementedException();
+        return $"RUN ...";
     }
 }
 

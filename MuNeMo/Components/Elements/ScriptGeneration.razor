@@ -1,3 +1,4 @@
+@using System.Text
 @using MuNeMo.Scripting
 @rendermode InteractiveServer
 @inject IShellScriptRepository ShellScriptRepository
@@ -66,22 +67,27 @@
 
     .styled-button:hover {
         background-color: #5a6268; /* Darker grey */
-    } 
+    }
+    
+    #bottom-container {
+        height: 100px;
+    }
 
 </style>
 
 @foreach (var element in _elements)
 {
     <div>
-        @if (element.Type is ScriptType.ScriptCall)
+        @if (element.GetType() == typeof(ShellScriptCall))
         {
-            var script = element.Script as ShellScript;
-            <ScriptCallWidget Script="@script"></ScriptCallWidget>
+            var script = element as ShellScriptCall;
+            <ScriptCallWidget ScriptCall="@script"></ScriptCallWidget>
             <button @onclick="() => RemoveScriptElement(element)">Remove</button>
         }
-        else if (element.Type is ScriptType.CustomScript)
+        else if (element.GetType() == typeof(ShellScriptCode))
         {
-            <ShellScriptCodeEditor></ShellScriptCodeEditor>
+            var script = element as ShellScriptCode;
+            <ShellScriptCodeEditor Code="@script"></ShellScriptCodeEditor>
             <button @onclick="() => RemoveScriptElement(element)">Remove</button>
         }
     </div>
@@ -98,15 +104,17 @@
             }
         </div>
     </div>
-    <button @onclick="AddCode" class="styled-button">Add Code</button>
+    <button @onclick="() => AddCode(new ShellScriptCode())" class="styled-button">Add Code</button>
 </div>
+
+<div id="bottom-container"></div>
 
 
 @code {
-    private List<ShellScript> availableShellScripts;
-    private List<ScriptElement> _elements = [];
+    private List<ShellScriptCall> availableShellScripts;
+    private List<IScript> _elements = [];
     
-    private string _selectedScriptElement;
+    private string _selectedScriptCallElement;
     
     protected override async Task OnInitializedAsync()
     {
@@ -120,7 +128,17 @@
     /// <returns></returns>
     public string GetExecutableScript()
     {
-        return "Test";
+        StringBuilder scriptBuilder = new StringBuilder();
+
+        scriptBuilder.Append("#!bin/bash");
+        scriptBuilder.Append("\n");
+        foreach (var element in _elements)
+        {
+            scriptBuilder.Append(element.ToExecutableScript());
+            scriptBuilder.Append("\n");
+        }
+
+        return scriptBuilder.ToString();
     }
     
     /// <summary>
@@ -138,31 +156,18 @@
         e.Value = string.Empty;
     }
 
-    private void AddShellScript(ShellScript script)
+    private void AddShellScript(ShellScriptCall scriptCall)
     {
-        _elements.Add(new ScriptElement { Type = ScriptType.ScriptCall, Script = script, Content = script.Name });
+        _elements.Add(scriptCall);
     }
     
-    private void AddCode()
+    private void AddCode(ShellScriptCode scriptCode)
     {
-        _elements.Add(new ScriptElement { Type = ScriptType.CustomScript, Content = "" });
+        _elements.Add(scriptCode);
     }
 
-    private void RemoveScriptElement(ScriptElement scriptElement)
+    private void RemoveScriptElement(IScript script)
     {
-        _elements.Remove(scriptElement);
-    }
-    
-    private class ScriptElement
-    {
-        public ScriptType Type { get; set; }
-        public IScript Script { get; set; }
-        public string Content { get; set; }
-    }
-
-    private enum ScriptType
-    {
-        ScriptCall,
-        CustomScript
+        _elements.Remove(script);
     }
 }

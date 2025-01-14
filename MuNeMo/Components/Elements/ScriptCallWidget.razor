@@ -32,8 +32,8 @@
 </style>
 
 
-<label id="script-label">@Script.Name</label>
-@foreach (var parameter in @Script.Parameters)
+<label id="script-label">@ScriptCall.Name</label>
+@foreach (var parameter in ScriptCall.Parameters)
 {
     <div class="parameter-container">
         <label class="parameter-label">
@@ -46,5 +46,5 @@
 @code {
     
     [Parameter] 
-    public required ShellScript Script { get; set; }
+    public required ShellScriptCall ScriptCall { get; set; }
 }
