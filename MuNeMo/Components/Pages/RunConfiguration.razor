@@ -21,6 +21,21 @@
     #yaml-documentation-container { 
         overflow-y: auto;
     }
+
+    #run-button {
+        position: fixed;
+        bottom: 10px;
+        right: 10px;
+        background-color: green;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        cursor: pointer; 
+    } 
+    
+    #run-button:hover {
+        background-color: darkgreen;
+    }
 </style>
 
 <PageTitle>Run multi-gitter</PageTitle>
@@ -29,7 +44,7 @@
 
 <div id="split-configuration-container">
     <div id="yaml-configuration-editor">
-        <YamlCodeEditor></YamlCodeEditor>
+        <YamlCodeEditor @ref="YamlCodeEditor"></YamlCodeEditor>
     </div>
     <div id="yaml-documentation-container">
         <YamlConfigurationDocumentation></YamlConfigurationDocumentation>
@@ -47,23 +62,31 @@
 </div>
 
 <div>
-    <button @onclick="Test">Run!</button>
+    <button id="run-button" @onclick="Run">Run!</button>
 </div>
 
 
 @code {
     private ScriptGeneration ScriptGeneration;
+    private YamlCodeEditor YamlCodeEditor;
     
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
         ScriptGeneration = new ScriptGeneration();
+        YamlCodeEditor = new YamlCodeEditor();
     }
 
-    private void Test()
+    private async Task Run()
     {
-        var t = ScriptGeneration.GetExecutableScript();
-        Console.WriteLine(t);
+        var script = ScriptGeneration.GetExecutableScript();
+        var configuration = await YamlCodeEditor.GetYamlConfigurationAsync();
+
+        File.WriteAllText("script.sh", script);
+        File.WriteAllText("configuration.yaml", configuration); 
+        
+        System.Diagnostics.Process.Start("chmod", ["+x", "./script.sh"]);
+        System.Diagnostics.Process.Start("multi-gitter", ["run", "./script.sh", "--config", "configuration.yaml"]);
     }
 
 }

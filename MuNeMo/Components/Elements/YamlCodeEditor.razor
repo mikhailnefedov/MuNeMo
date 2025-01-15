@@ -7,11 +7,15 @@
 </style>
 
 <div>
-    <StandaloneCodeEditor CssClass="yaml-configuration-editor" ConstructionOptions="EditorConstructionOptions" />
+    <StandaloneCodeEditor @ref="_editor"
+                          CssClass="yaml-configuration-editor"
+                          ConstructionOptions="EditorConstructionOptions" />
 </div>
 
 @code
 {
+    private StandaloneCodeEditor _editor = null!;
+    
     private StandaloneEditorConstructionOptions EditorConstructionOptions(StandaloneCodeEditor editor)
     {
         return new StandaloneEditorConstructionOptions
@@ -25,5 +29,10 @@
                 Enabled = false,
             }
         };
+    }
+
+    public async Task<string> GetYamlConfigurationAsync()
+    {
+        return await _editor.GetValue();
     }
 }

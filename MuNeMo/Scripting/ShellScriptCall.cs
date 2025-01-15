@@ -1,3 +1,4 @@
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace MuNeMo.Scripting;
@@ -39,7 +40,14 @@ public class ShellScriptCall : IScript
     
     public string ToExecutableScript()
     {
-        return $"RUN ...";
+        StringBuilder stringBuilder = new();
+        stringBuilder.Append(Path);
+        foreach (var parameter in Parameters)
+        {
+            stringBuilder.Append($" {parameter.Value.Value}");
+        }
+
+        return stringBuilder.ToString();
     }
 }
 
