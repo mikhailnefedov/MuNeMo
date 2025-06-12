@@ -1,35 +1,39 @@
-using MuNeMo.Components;
-using MuNeMo.DataAccess;
-using MuNeMo.Scripting;
+using System.Diagnostics;
 
-var builder = WebApplication.CreateBuilder(args);
-
-// Add services to the container.
-builder.Services.AddRazorComponents()
-    .AddInteractiveServerComponents();
-
-builder.Services.AddDbContext<MultiModifyContext>();
-
-builder.Services.AddTransient<IShellScriptRepository, ShellScriptRepository>();
-
-var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
+try
 {
-    app.UseExceptionHandler("/Error", createScopeForErrors: true);
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
+    ProcessStartInfo psi = new ProcessStartInfo
+    {
+        FileName = "jq",
+        Arguments = "--version",
+        RedirectStandardOutput = true,
+        UseShellExecute = false,
+        CreateNoWindow = true
+    };
+
+    using (Process process = Process.Start(psi))
+    {
+        string output = process.StandardOutput.ReadToEnd();
+        process.WaitForExit();
+        Console.WriteLine($"jq is installed: {output}");
+    }
+}
+catch (Exception)
+{
+    Console.WriteLine("jq doesn't seem to be installed.");
 }
 
-await Task.Run(() => { });
+string directoryPath = Directory.GetCurrentDirectory();
+var searchText = "Freezing";
+var replaceText = "Raining";
 
-app.UseHttpsRedirection();
-
-app.UseStaticFiles();
-app.UseAntiforgery();
-
-app.MapRazorComponents<App>()
-    .AddInteractiveServerRenderMode();
-
-app.Run();
+foreach (var file in Directory.GetFiles(directoryPath,"*.*", SearchOption.AllDirectories))
+{
+    string content = File.ReadAllText(file);
+    if (content.Contains(searchText))
+    {
+        content = content.Replace(searchText, replaceText);
+        File.WriteAllText(file, content);
+        Console.WriteLine($"Updated: {file}");
+    }
+}

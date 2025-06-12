@@ -1,0 +1,10 @@
+token: token
+assignees: user
+author-name: author-name
+author-email: author-email
+base-branch: main
+conflict-strategy: replace
+draft: false
+platform: gitlab
+project: user/project42
+pr-title: Test of MuNeMo

@@ -1,39 +1,18 @@
-﻿FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine3.20 AS base
-USER $APP_UID
+﻿# Use the .NET SDK image to allow building the project at runtime.
+FROM mcr.microsoft.com/dotnet/sdk:8.0
+
+# multi-gitter requires sudo for installation
+RUN apt-get update
+RUN apt install sudo
+RUN curl -s https://raw.githubusercontent.com/lindell/multi-gitter/master/install.sh | sh
+
 WORKDIR /app
-EXPOSE 8080
-EXPOSE 8081
 
-USER root
-# Install curl, sudo, and bash RUN 
-RUN apk update && apk add --no-cache curl sudo bash git yq
+COPY entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
 
-RUN sudo apk add dotnet8-sdk
+CMD ["/app/entrypoint.sh"]
 
-RUN sudo dotnet tool install --global dotnet-ef
+# ENTRYPOINT ["tail", "-f", "/dev/null"]
 
-# Set the PATH to include the dotnet tools 
-ENV PATH="$PATH:/root/.dotnet/tools"
 
-# Download and install multi-gitter using sudo
-RUN sudo curl -s https://raw.githubusercontent.com/lindell/multi-gitter/master/install.sh | sudo sh
-
-USER $APP_UID
-
-FROM mcr.microsoft.com/dotnet/sdk:8.0-alpine3.20 AS build
-ARG BUILD_CONFIGURATION=Release
-WORKDIR /src
-COPY ["MuNeMo/MuNeMo.csproj", "MuNeMo/"]
-RUN dotnet restore "MuNeMo/MuNeMo.csproj"
-COPY . .
-WORKDIR "/src/MuNeMo"
-RUN dotnet build "MuNeMo.csproj" -c $BUILD_CONFIGURATION -o /app/build
-
-FROM build AS publish
-ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "MuNeMo.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
-
-FROM base AS final
-WORKDIR /app
-COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "MuNeMo.dll"]
