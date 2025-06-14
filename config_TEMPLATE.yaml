@@ -7,4 +7,4 @@ conflict-strategy: replace
 draft: false
 platform: gitlab
 project: user/project42
-pr-title: Test of MuNeMo
+pr-title: Change

@@ -5,3 +5,5 @@
 /.idea
 
 /MuNeMo.sln.DotSettings.user
+
+config_PRODUCTION.yaml
